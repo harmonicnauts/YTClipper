@@ -2,6 +2,8 @@
 
 YTClipper is a simple and small fun project of mine that uses ffmpeg, yt-dlp, and streamlit to simple tool built with Streamlit that allows you to download and cut fragments of YouTube videos.
 
+![Screenshot](assets/Screenshot%202024-04-09%20142115.png)
+
 ## Features
 
 - Download YouTube videos

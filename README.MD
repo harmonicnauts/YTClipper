@@ -14,7 +14,9 @@ YTClipper is a simple and small fun project of mine that uses ffmpeg, yt-dlp, an
 
 1. Clone the repository:
 
+```bash
 git clone https://github.com/harmonicnauts/YTClipper.git
+```
 
 2. Install the required dependencies:
 

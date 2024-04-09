@@ -20,7 +20,9 @@ git clone https://github.com/harmonicnauts/YTClipper.git
 
 2. Install the required dependencies:
 
+```bash
 pip install -r requirements.txt
+```
 
 3. Download the `yt-dlp.exe`(if you want to use the latest version) and `ffmpeg` executables. The `yt-dlp.exe` can be placed inside the ./app/ folder.
 

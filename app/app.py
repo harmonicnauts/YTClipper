@@ -26,19 +26,19 @@ def is_youtube_video_exist(video_url):
         return False
 
 # download the video using yt-dlp
-def download_video(video_url):
+def download_video(video_url, start_time, end_time):
     try:
         if is_youtube_url(video_url):
-            # video_id = video_url.split('=')[-1]
             if is_youtube_video_exist(video_url):
                 if os.path.exists(DOWNLOADED_VIDEO_FILE_PATH):
                     os.remove(DOWNLOADED_VIDEO_FILE_PATH)
-                command = [YTDLP_PATH, video_url, "-o", DOWNLOADED_VIDEO_FILE_PATH, "--progress"]
+                command = [YTDLP_PATH, video_url, "--downloader", "ffmpeg", "--downloader-args", f"ffmpeg_i:-ss {start_time} -to {end_time}", "-o", DOWNLOADED_VIDEO_FILE_PATH, "--progress", "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4"]
                 process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
                 progress_pattern = re.compile(r'\[download\]\s+(\d+\.\d)%')
                 progress = st.progress(0, text=f'Downloading the video : {0}%')
                 while True:
                     line = process.stdout.readline()
+                    print(line)
                     if not line:
                         break
                     match = progress_pattern.search(line)
@@ -83,18 +83,16 @@ def cut_fragment(start_time, end_time, video_id):
 def main():
     st.title("YTClipper")
     st.write("This is a small fun project where you can pass the URL into a box and set the start and end time to clip a video!")
-    st.markdown("*<font color='red'>Note:</font> This program will use your internet to download the full-length video onto your device.*", unsafe_allow_html=True)
+    st.markdown("<font color='red'>Note:</font> This program will use your internet to download the full-length video onto your device.", unsafe_allow_html=True)
     video_url = st.text_input("Enter YouTube Video URL:")
     embed_div_placeholder = st.empty()
     embed_button_placeholder = st.empty()
     start_time = st.number_input("Enter Start Time (in seconds):", min_value=0.0, step=0.1)
     end_time = st.number_input("Enter End Time (in seconds):", min_value=0.0, step=0.1)
 
-    if st.button("Download and Cut"):
+    if st.button("Download"):
         try:
-            if download_video(video_url):
-                cut_fragment(start_time, end_time, video_url.split('=')[-1])
-                st.success("Video downloaded and fragment cut successfully!")
+            download_video(video_url, start_time, end_time)
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
 
@@ -109,7 +107,7 @@ def main():
             st.error("Invalid YouTube video URL.")
 
     st.markdown("#### Convert Video Timestamp to Seconds")
-    st.markdown("*This may feel clunky because in streamlit it always refreshes the page :(*")
+    st.markdown("This may feel clunky because in streamlit it always refreshes the page :(")
 
     time_stamp = st.text_input("Enter Video Timestamp HH:MM: SS")
     if st.button("Convert to Seconds"):

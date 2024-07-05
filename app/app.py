@@ -3,9 +3,9 @@ import subprocess, os, re, requests
 
 
 # file/folder paths
-YTDLP_PATH = os.path.join(os.getcwd(), "yt-dlp.exe")
+YTDLP_PATH = os.path.join(os.getcwd(), "./app/yt-dlp.exe")
 FFMPEG_PATH = "ffmpeg"
-VIDEO_FOLDER_PATH = os.path.join(os.getcwd(), "../",  "videos/")
+VIDEO_FOLDER_PATH = os.path.join(os.getcwd(), "./",  "videos/")
 DOWNLOADED_VIDEO_FILE_PATH = os.path.join(VIDEO_FOLDER_PATH, "video.webm")
 
 # check if the URL is a valid YouTube video URL
@@ -34,18 +34,12 @@ def download_video(video_url, start_time, end_time):
                     os.remove(DOWNLOADED_VIDEO_FILE_PATH)
                 command = [YTDLP_PATH, video_url, "--downloader", "ffmpeg", "--downloader-args", f"ffmpeg_i:-ss {start_time} -to {end_time}", "-o", DOWNLOADED_VIDEO_FILE_PATH, "--progress", "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4"]
                 process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-                progress_pattern = re.compile(r'\[download\]\s+(\d+\.\d)%')
-                progress = st.progress(0, text=f'Downloading the video : {0}%')
-                while True:
-                    line = process.stdout.readline()
-                    print(line)
-                    if not line:
-                        break
-                    match = progress_pattern.search(line)
-                    if match:
-                        percentage = float(match.group(1))
-                        normalized_percentage = percentage / 100.0                        
-                        progress.progress(normalized_percentage, text=f'Downloading the video : {percentage}%')
+                with st.spinner('Downloading the video...'):
+                    while True:
+                        line = process.stdout.readline()
+                        print(line)
+                        if not line:
+                            break
                 st.success("Video downloaded successfully!")
                 return True
             else:
@@ -57,28 +51,28 @@ def download_video(video_url, start_time, end_time):
     return False
 
 # cut fragments using ffmpeg
-def cut_fragment(start_time, end_time, video_id):
-    try:
-        output_placeholder = st.empty()
-        error_placeholder = st.empty()
+# def cut_fragment(start_time, end_time, video_id):
+#     try:
+#         output_placeholder = st.empty()
+#         error_placeholder = st.empty()
 
-        if os.path.exists(DOWNLOADED_VIDEO_FILE_PATH):
-            output_file = os.path.join(VIDEO_FOLDER_PATH, f"video-{start_time}-{end_time}-{video_id}.mp4")
-            command = [FFMPEG_PATH, "-ss", str(start_time), "-t", str(end_time - start_time), "-i", DOWNLOADED_VIDEO_FILE_PATH, "-y", "-c:v", "copy", "-c:a", "aac", "-strict", "experimental", output_file]
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            while True:
-                output = process.stdout.readline().decode().strip()
-                error = process.stderr.readline().decode().strip()
-                if not output and not error:
-                    break
-                if output:
-                    output_placeholder.text("ffmpeg Output: " + output)
-                if error:
-                    error_placeholder.error("ffmpeg Errors: " + error)
-        else:
-            st.error("Download the video first before cutting.")
-    except Exception as e:
-        st.error(f"An error occurred during video cutting: {str(e)}")
+#         if os.path.exists(DOWNLOADED_VIDEO_FILE_PATH):
+#             output_file = os.path.join(VIDEO_FOLDER_PATH, f"video-{start_time}-{end_time}-{video_id}.mp4")
+#             command = [FFMPEG_PATH, "-ss", str(start_time), "-t", str(end_time - start_time), "-i", DOWNLOADED_VIDEO_FILE_PATH, "-y", "-c:v", "copy", "-c:a", "aac", "-strict", "experimental", output_file]
+#             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#             while True:
+#                 output = process.stdout.readline().decode().strip()
+#                 error = process.stderr.readline().decode().strip()
+#                 if not output and not error:
+#                     break
+#                 if output:
+#                     output_placeholder.text("ffmpeg Output: " + output)
+#                 if error:
+#                     error_placeholder.error("ffmpeg Errors: " + error)
+#         else:
+#             st.error("Download the video first before cutting.")
+#     except Exception as e:
+#         st.error(f"An error occurred during video cutting: {str(e)}")
 
 def main():
     st.title("YTClipper")

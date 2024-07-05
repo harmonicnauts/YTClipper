@@ -103,10 +103,10 @@ def main():
     st.markdown("#### Convert Video Timestamp to Seconds")
     st.markdown("This may feel clunky because in streamlit it always refreshes the page :(")
 
-    time_stamp = st.text_input("Enter Video Timestamp HH:MM: SS")
+    time_stamp = st.text_input("Enter Video Timestamp HH MM SS (Split with spaces)")
     if st.button("Convert to Seconds"):
         try:
-            h, m, s = map(int, time_stamp.split(':'))
+            h, m, s = map(int, time_stamp.split(' '))
             total_seconds = h * 3600 + m * 60 + s
             st.success(f"The timestamp '{time_stamp}' is equivalent to {total_seconds} seconds.")
         except ValueError:

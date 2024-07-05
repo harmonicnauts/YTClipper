@@ -77,7 +77,7 @@ def download_video(video_url, start_time, end_time):
 def main():
     st.title("YTClipper")
     st.write("This is a small fun project where you can pass the URL into a box and set the start and end time to clip a video!")
-    st.markdown("<font color='red'>Note:</font> This program will use your internet to download the full-length video onto your device.", unsafe_allow_html=True)
+    st.markdown("<font color='red'>Note:</font> This program will use your internet to download the  video onto your device.", unsafe_allow_html=True)
     video_url = st.text_input("Enter YouTube Video URL:")
     embed_div_placeholder = st.empty()
     embed_button_placeholder = st.empty()
